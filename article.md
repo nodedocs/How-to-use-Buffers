@@ -2,9 +2,9 @@
 
 ## Why Buffers?
 
-Pure javascript, while great with unicode-encoded strings, does not handle straight binary data very well. This is fine on the browser, where most data is in the form of strings. However, node.js servers have to also deal with TCP streams and reading and writing to the filesystem, both which make it necessary to deal with purely binary streams of data.
+Pure javascript, while great with unicode-encoded strings, does not handle straight binary data very well. This is fine on the browser, where most data is in the form of strings. However, Node servers have to also deal with TCP streams and reading and writing to the filesystem, both which make it necessary to deal with purely binary streams of data.
 
-One way to handle this problem is to just use strings *anyway*, which is exactly what Node.js did at first. However, this approach is extremely problematic to work with; It's slow, makes you work with an API designed for strings and not binary data, and has a tendency to break in some ways.
+One way to handle this problem is to just use strings *anyway*, which is exactly what Node did at first. However, this approach is extremely problematic to work with; It's slow, makes you work with an API designed for strings and not binary data, and has a tendency to break in some ways.
 
 Don't use binary strings. Use *buffers* instead!
 
@@ -98,7 +98,7 @@ This method checks to see if `object` is a buffer, similar to `Array.isArray`.
 
 #### Buffer.byteLength(string, encoding)
 
-With this function, you can check the number of bytes required to encode a string with a given encoding (which defaults to utf-8). This length is *not* the same as string length, since many characters require more bytes to encode. For example:
+With this function, you can check the number of bytes required to encode a string with a given encoding (which defaults to UTF-8). This length is *not* the same as string length, since many characters require more bytes to encode. For example:
 
     > var snowman = "☃";
     > snowman.length
