@@ -22,15 +22,21 @@ In the wild, buffers are usually seen in the context of binary data coming from 
 
 There are a few ways to create new buffers:
 
-    var buffer = new Buffer(8);
+```javascript
+var buffer = new Buffer(8);
+````
 
 This buffer is uninitialized and contains 8 bytes.
 
-    var buffer = new Buffer([ 8, 6, 7, 5, 3, 0, 9]);
+```javascript
+var buffer = new Buffer([ 8, 6, 7, 5, 3, 0, 9]);
+```
 
 This initializes the buffer to the contents of this array. Keep in mind that the contents of the array are integers representing bytes.
 
-    var buffer = new Buffer("I'm a string!", "utf-8")
+```javascript
+var buffer = new Buffer("I'm a string!", "utf-8")
+```
 
 This initializes the buffer to a binary encoding of the first string as specified by the second argument (in this case, utf-8). **"utf8** is by far the most common encoding used with node, but `Buffer` also supports:
 * **"ascii"**: This encoding is way fast, but is limited to the ascii character set. Moreover, it will convert null characters into spaces, unlike the UTF-8 encoding.
@@ -43,19 +49,25 @@ This initializes the buffer to a binary encoding of the first string as specifie
 
 Given that there is already a buffer created:
 
-    > var buffer = new Buffer(16);
+```javascript
+> var buffer = new Buffer(16);
+````
 
 we can start writing strings to it:
 
-    > buffer.write("Hello", "utf8")
-    5
+```javascript
+> buffer.write("Hello", "utf8")
+5
+```
 
 The first argument to `buffer.write` is the string to write to the buffer, and the second argument is the string encoding. It happens to default to "utf8"" so this argument is extraneous.
 
 `buffer.write` returned 5. This means that we wrote to five bytes of the buffer. The fact that the string "Hello" is also 5 characters long is coincidental, since each character *just happened* to be 8 bits apiece. This is useful if you want to complete the message:
 
-    > buffer.write(" world!", 5, "utf8")
-    7
+```javascript
+> buffer.write(" world!", 5, "utf8")
+7
+````
 
 When `buffer.write` has 3 arguments, the second argument indicates an offset, or the index of the buffer to start writing at.
 
@@ -65,28 +77,34 @@ When `buffer.write` has 3 arguments, the second argument indicates an offset, or
 
 Probably the most common way to read buffers is to use the `toString` method, since many buffers contain text:
 
-    > buffer.toString('utf8')
-    'Hello world!\u0000�k\t'
+```javascript
+> buffer.toString('utf8')
+'Hello world!\u0000�k\t'
+````
 
 Again, the first argument is the encoding. In this case, it can be seen that not the entire buffer was used! Luckily, because we know how many bytes we've written to the buffer, we can simply add more arguments to "stringify" the slice that's actually interesting:
 
-    > buffer.toString("utf8", 0, 12)
-    'Hello world!'
+```javascript
+> buffer.toString("utf8", 0, 12)
+'Hello world!'
+```
 
 #### Individual octets:
 
 You can also set individual bits by using an array-like syntax:
 
-    > buffer[12] = buffer[11];
-    33
-    > buffer[13] = "1".charCodeAt();
-    49
-    > buffer[14] = buffer[13];
-    49
-    > buffer[15] = 33
-    33
-    > buffer.toString("utf-8")
-    'Hello world!!11!'
+```javascript
+> buffer[12] = buffer[11];
+33
+> buffer[13] = "1".charCodeAt();
+49
+> buffer[14] = buffer[13];
+49
+> buffer[15] = 33
+33
+> buffer.toString("utf-8")
+'Hello world!!11!'
+```
 
 In this example, I set the remaining bytes, by hand, such that they represent UFT-8 encoded "!" and "1" characters.
 
@@ -100,11 +118,13 @@ This method checks to see if `object` is a buffer, similar to `Array.isArray`.
 
 With this function, you can check the number of bytes required to encode a string with a given encoding (which defaults to UTF-8). This length is *not* the same as string length, since many characters require more bytes to encode. For example:
 
-    > var snowman = "☃";
-    > snowman.length
-    1
-    > Buffer.byteLength(snowman)
-    3
+```javascript
+> var snowman = "☃";
+> snowman.length
+1
+> Buffer.byteLength(snowman)
+3
+```
 
 The unicode snowman is only one character, but takes 3 entire bytes to encode!
 
@@ -112,11 +132,13 @@ The unicode snowman is only one character, but takes 3 entire bytes to encode!
 
 This is the length of your buffer, and represents how much memory is allocated. It is not the same as the size of the buffer's contents, since a buffer may be half-filled. For example:
 
-    > var buffer = new Buffer(16)
-    > buffer.write(snowman)
-    3
-    > buffer.length
-    16
+```javascript
+> var buffer = new Buffer(16)
+> buffer.write(snowman)
+3
+> buffer.length
+16
+```
 
 In this example, the contents written to the buffer only consist of three groups (since they represent the single-character snowman), but the buffer's length is still 16, as it was initialized.
 
@@ -124,14 +146,16 @@ In this example, the contents written to the buffer only consist of three groups
 
 `buffer.copy` allows one to copy the contents of one buffer onto another. The first argument is the target buffer on which to copy the contents of `buffer`, and the rest of the arguments allow for copying only a subsection of the source buffer to somewhere in the middle of the target buffer. For example:
 
-    > var frosty = new Buffer(24)
-    > var snowman = new Buffer("☃", "utf8")
-    > frosty.write("Happy birthday! ", "utf8")
-    16
-    > snowman.copy(frosty, 16)
-    3
-    > frosty.toString("utf8", 0, 19)
-    'Happy birthday! ☃'
+```javascript
+> var frosty = new Buffer(24)
+> var snowman = new Buffer("☃", "utf8")
+> frosty.write("Happy birthday! ", "utf8")
+16
+> snowman.copy(frosty, 16)
+3
+> frosty.toString("utf8", 0, 19)
+'Happy birthday! ☃'
+```
 
 In this example, I copied the "snowman" buffer, which contains a 3 byte long character, to the "frosty" buffer, to which I had written to the first 16 bytes. Because the snowman character is 3 bytes long, the result takes up 19 bytes of the buffer.
 
@@ -139,12 +163,14 @@ In this example, I copied the "snowman" buffer, which contains a 3 byte long cha
 
 This method's API is generally the same as that of `Array.prototype.slice`, but with one very import difference: The slice is **not** a new buffer and merely references a subset of the memory space. *Modifying the slice will also modify the original buffer*! For example:
 
-    > var puddle = frosty.slice(16, 19)
-    > puddle.toString()
-    '☃'
-    > puddle.write("___")
-    3
-    > frosty.toString("utf-8", 0, 19)
-    'Happy birthday! ___'
+```javascript
+> var puddle = frosty.slice(16, 19)
+> puddle.toString()
+'☃'
+> puddle.write("___")
+3
+> frosty.toString("utf-8", 0, 19)
+'Happy birthday! ___'
+```
 
 Now Frosty has been turned into a puddle of underscores. Bummer.
